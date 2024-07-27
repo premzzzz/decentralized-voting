@@ -49,16 +49,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
         await window.ethereum.enable();
+        console.log('MetaMask connected');
     } else {
         console.log('Please install MetaMask!');
     }
+
+    document.getElementById('voteButton').addEventListener('click', vote);
+    document.getElementById('resultsButton').addEventListener('click', getVotes);
 });
 
 async function vote() {
     const candidate = document.getElementById('candidate').value;
     const contract = new web3.eth.Contract(contractABI, contractAddress);
     const accounts = await web3.eth.getAccounts();
-    await contract.methods.vote(candidate).send({ from: accounts[0] });
+    console.log(`Voting for ${candidate} from account ${accounts[0]}`);
+
+    try {
+        await contract.methods.vote(candidate).send({ from: accounts[0] });
+        alert('Vote cast successfully!');
+    } catch (error) {
+        console.error('Error casting vote:', error);
+        alert('There was an error casting your vote.');
+    }
 }
 
 async function getVotes() {
@@ -68,9 +80,15 @@ async function getVotes() {
     results.innerHTML = '';
 
     for (let i = 0; i < candidates.length; i++) {
-        const votes = await contract.methods.getVotes(candidates[i]).call();
-        const li = document.createElement('li');
-        li.textContent = `${candidates[i]}: ${votes}`;
-        results.appendChild(li);
+        try {
+            const votes = await contract.methods.getVotes(candidates[i]).call();
+            console.log(`${candidates[i]} has ${votes} votes`);
+            const li = document.createElement('li');
+            li.textContent = `${candidates[i]}: ${votes}`;
+            results.appendChild(li);
+        } catch (error) {
+            console.error(`Error fetching votes for ${candidates[i]}:`, error);
+        }
     }
 }
+
