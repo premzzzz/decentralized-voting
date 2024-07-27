@@ -79,9 +79,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function vote() {
     const candidate = document.getElementById('candidate').value;
+    console.log('Candidate:', candidate);
     const contract = new web3.eth.Contract(contractABI, contractAddress);
     const accounts = await web3.eth.getAccounts();
-    console.log(`Voting for ${candidate} from account ${accounts[0]}`);
+    console.log('Accounts:', accounts);
 
     try {
         await contract.methods.vote(candidate).send({ from: accounts[0] });
@@ -91,6 +92,7 @@ async function vote() {
         alert('There was an error casting your vote.');
     }
 }
+
 
 async function getVotes() {
     console.log('Get Votes button clicked');
@@ -111,5 +113,6 @@ async function getVotes() {
         }
     }
 }
+
 
 
