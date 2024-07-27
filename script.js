@@ -74,6 +74,7 @@ async function vote() {
 }
 
 async function getVotes() {
+    console.log('Get Votes button clicked');
     const contract = new web3.eth.Contract(contractABI, contractAddress);
     const candidates = ["Modi", "Rahul Gandhi", "Kejriwal", "Amit Shah", "Eknath Shinde"];
     const results = document.getElementById('voteResults');
@@ -91,4 +92,5 @@ async function getVotes() {
         }
     }
 }
+
 
