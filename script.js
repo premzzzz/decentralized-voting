@@ -1,118 +1,71 @@
-const contractAddress = '0x5e9406C6391143e94c39a678c574a1069bFc628e'; // Replace with your contract address
-const contractABI = [
-	{
-		"inputs": [
-			{
-				"internalType": "string[]",
-				"name": "candidateNames",
-				"type": "string[]"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "candidate",
-				"type": "string"
-			}
-		],
-		"name": "vote",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "candidates",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "candidate",
-				"type": "string"
-			}
-		],
-		"name": "getVotes",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
-];
+// Ensure this script is loaded after Web3.js and your HTML is fully loaded
+document.addEventListener("DOMContentLoaded", function() {
+    let web3;
+    let contract;
 
-document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize Web3
     if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum);
-        await window.ethereum.enable();
-        console.log('MetaMask connected');
+        web3 = new Web3(window.ethereum);
+        window.ethereum.request({ method: 'eth_requestAccounts' })
+            .then(function() {
+                console.log('Web3 initialized');
+                initializeContract();
+            })
+            .catch(function(error) {
+                console.error('User denied account access', error);
+            });
+    } else if (window.web3) {
+        web3 = new Web3(window.web3.currentProvider);
+        console.log('Web3 initialized');
+        initializeContract();
     } else {
-        console.log('Please install MetaMask!');
+        console.log('No Web3 provider found. Please install MetaMask!');
     }
 
-    document.getElementById('voteButton').addEventListener('click', vote);
-    document.getElementById('resultsButton').addEventListener('click', getVotes);
+    // Function to initialize the contract
+    function initializeContract() {
+        // Replace with your contract ABI and address
+        const abi = [/* Your ABI here */];
+        const contractAddress = '0xYourContractAddress'; // Replace with your contract address
+
+        contract = new web3.eth.Contract(abi, contractAddress);
+
+        // Add event listeners for buttons
+        document.getElementById('voteButton').addEventListener('click', vote);
+        document.getElementById('resultsButton').addEventListener('click', getVotes);
+    }
+
+    // Function to vote
+    function vote() {
+        const selectedCandidate = document.getElementById('candidate').value;
+        web3.eth.getAccounts().then(function(accounts) {
+            const account = accounts[0];
+            contract.methods.voteForCandidate(selectedCandidate)
+                .send({ from: account })
+                .then(function(receipt) {
+                    console.log('Vote successful', receipt);
+                })
+                .catch(function(error) {
+                    console.error('Error voting', error);
+                });
+        });
+    }
+
+    // Function to get votes
+    function getVotes() {
+        contract.methods.getVotes().call()
+            .then(function(result) {
+                const voteResults = document.getElementById('voteResults');
+                voteResults.innerHTML = ''; // Clear previous results
+                result.forEach(function(candidate) {
+                    const li = document.createElement('li');
+                    li.textContent = `${candidate.name}: ${candidate.voteCount}`;
+                    voteResults.appendChild(li);
+                });
+            })
+            .catch(function(error) {
+                console.error('Error getting votes', error);
+            });
+    }
 });
-
-async function vote() {
-    const candidate = document.getElementById('candidate').value;
-    console.log('Candidate:', candidate);
-    const contract = new web3.eth.Contract(contractABI, contractAddress);
-    const accounts = await web3.eth.getAccounts();
-    console.log('Accounts:', accounts);
-
-    try {
-        await contract.methods.vote(candidate).send({ from: accounts[0] });
-        alert('Vote cast successfully!');
-    } catch (error) {
-        console.error('Error casting vote:', error);
-        alert('There was an error casting your vote.');
-    }
-}
-
-
-async function getVotes() {
-    console.log('Get Votes button clicked');
-    const contract = new web3.eth.Contract(contractABI, contractAddress);
-    const candidates = ["Modi", "Rahul Gandhi", "Kejriwal", "Amit Shah", "Eknath Shinde"];
-    const results = document.getElementById('voteResults');
-    results.innerHTML = '';
-
-    for (let i = 0; i < candidates.length; i++) {
-        try {
-            const votes = await contract.methods.getVotes(candidates[i]).call();
-            console.log(`${candidates[i]} has ${votes} votes`);
-            const li = document.createElement('li');
-            li.textContent = `${candidates[i]}: ${votes}`;
-            results.appendChild(li);
-        } catch (error) {
-            console.error(`Error fetching votes for ${candidates[i]}:`, error);
-        }
-    }
-}
-
-
 
