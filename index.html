@@ -4,43 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Decentralized Voting System</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div id="branding">
-                <h1>Voting System</h1>
+    <div class="container">
+        <h1>Decentralized Voting System</h1>
+        <div id="candidates">
+            <div>
+                <label for="candidate">Select Candidate:</label>
+                <select id="candidate">
+                    <option value="Modi">Modi</option>
+                    <option value="Rahul Gandhi">Rahul Gandhi</option>
+                    <option value="Kejriwal">Kejriwal</option>
+                    <option value="Amit Shah">Amit Shah</option>
+                    <option value="Eknath Shinde">Eknath Shinde</option>
+                </select>
             </div>
-            <nav>
-                <ul>
-                    <li class="current"><a href="index.html">Home</a></li>
-                </ul>
-            </nav>
+            <button id="voteButton">Vote</button>
         </div>
-    </header>
-    <section id="showcase">
-        <div class="container">
-            <h1>Welcome to the Decentralized Voting System</h1>
-            <p>Secure and transparent voting powered by blockchain technology.</p>
+        <div id="results">
+            <h2>Results</h2>
+            <button id="resultsButton">Get Votes</button>
+            <ul id="voteResults"></ul>
         </div>
-    </section>
-    <section id="main-content" class="container">
-        <h2>Vote for your candidate</h2>
-        <form>
-            <label for="candidate">Choose a candidate:</label>
-            <select id="candidate" name="candidate">
-                <option value="candidate1">Candidate 1</option>
-                <option value="candidate2">Candidate 2</option>
-            </select>
-            <button type="submit">Vote</button>
-        </form>
-    </section>
-    <footer>
-        <p>Decentralized Voting System &copy; 2024</p>
-    </footer>
-    <script src="js/app.js"></script>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
-
     
